@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     api-spec-service = {
-      source = "localhost/providers/api-spec-service"
+      source = "registry.terraform.io/RevelSystems/api-spec-service"
     }
   }
 }
