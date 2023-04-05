@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -47,9 +46,14 @@ func configure(p *schema.Provider) func(context.Context, *schema.ResourceData) (
 		config := Config{
 			M2MToken:    d.Get("m2m_token").(string),
 			Environment: d.Get("environment").(string),
-			HTTPClient:  &http.Client{},
 		}
-		return config, nil
+
+		client, err := config.Client()
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+
+		return client, nil
 	}
 }
 
