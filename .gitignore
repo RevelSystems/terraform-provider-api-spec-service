@@ -12,3 +12,5 @@
 .terraform.lock.hcl
 *.tfstate
 *.tfstate.*
+
+terraform-provider-api-spec-service

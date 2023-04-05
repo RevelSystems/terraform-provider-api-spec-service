@@ -1,12 +1,18 @@
-GOARCH=$(shell go env GOARCH)
-INSTALL_PATH=~/.terraform.d/plugins/localhost/providers/api-spec-service/0.0.1/darwin_$(GOARCH)
+HOSTNAME=registry.terraform.io
+NAMESPACE=RevelSystems
+NAME=api-spec-service
+BINARY=terraform-provider-${NAME}
+VERSION=0.1.0
+OS_ARCH=darwin_$(shell uname -m)
+
+default: install
 
 build:
-	mkdir -p $(INSTALL_PATH)
-	go build -o $(INSTALL_PATH)/terraform-provider-api-spec-service main.go
+	go build -o ${BINARY}
 
-dev: build
-	rm ./examples/local/.terraform.lock.hcl || true
-	cd ./examples/local && terraform init
-	cd ./examples/local && terraform destroy
-	cd ./examples/local && TF_LOG=TRACE terraform apply -auto-approve
+install: build
+	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+
+release:
+	goreleaser release --rm-dist --snapshot --skip-publish  --skip-sign
