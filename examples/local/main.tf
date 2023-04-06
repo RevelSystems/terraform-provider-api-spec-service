@@ -7,8 +7,7 @@ terraform {
 }
 
 provider "api-spec-service" {
-  m2m_token   = "<M2M-token>"
-  environment = "dev"
+  m2m_token = "<M2M-token>"
 }
 
 resource "oas_document" "testoas" {
