@@ -7,13 +7,13 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 var (
-	allResources = make(map[string]func() *schema.Resource)
+	allResources     = make(map[string]func() *schema.Resource)
+	registerResource = makeRegisterResourceFunc(allResources, "resource")
 )
-
-var registerResource = makeRegisterResourceFunc(allResources, "resource")
 
 func New() func() *schema.Provider {
 	return func() *schema.Provider {
@@ -27,10 +27,11 @@ func New() func() *schema.Provider {
 					Description: "The M2M token that will be used to call API spec service",
 				},
 				"environment": {
-					Type:        schema.TypeString,
-					Optional:    true,
-					Default:     "dev",
-					Description: "API spec service envrionemnt [dev (Default), qa, prod]",
+					Type:         schema.TypeString,
+					Optional:     true,
+					Default:      "dev",
+					Description:  "API spec service envrionemnt",
+					ValidateFunc: validation.StringInSlice([]string{"dev", "qa", "prod"}, false),
 				},
 			},
 		}

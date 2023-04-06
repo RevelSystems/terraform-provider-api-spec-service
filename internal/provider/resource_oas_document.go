@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -26,7 +27,7 @@ var _ = registerResource("oas_document", func() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"oas_file_path": {
-				Description: "Path to OAS file",
+				Description: "Path to OpenAPI specification file",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
@@ -57,8 +58,8 @@ func resourceOASDocumentCreate(ctx context.Context, d *schema.ResourceData, meta
 	oasFileExtension := filepath.Ext(oasFilePath)
 
 	// Check OAS file extension
-	contentType := fileExtensionToContentType[oasFileExtension]
-	if contentType == "" {
+	contentType, contentTypeFound := fileExtensionToContentType[oasFileExtension]
+	if !contentTypeFound {
 		return diag.Errorf("Invalid file extension. Only json and yaml (yml) are allowed")
 	}
 
@@ -69,14 +70,13 @@ func resourceOASDocumentCreate(ctx context.Context, d *schema.ResourceData, meta
 	}
 	defer oasFile.Close()
 
-	_, err = client.UploadOASDocument(oasFile, contentType)
+	resp, err := client.UploadOASDocument(oasFile, contentType)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	// TODO: construct id from title and version
-	oas_title := "tf provider test"
-	oas_version := "1.0.0"
+	oas_title := strings.ToLower(resp.Title)
+	oas_version := strings.ToLower(resp.Version)
 
 	d.SetId(fmt.Sprintf("%s#%s", oas_title, oas_version))
 	d.Set("oas_title", oas_title)
@@ -105,7 +105,6 @@ func resourceOASDocumentDelete(ctx context.Context, d *schema.ResourceData, meta
 	oasTitle := d.Get("oas_title").(string)
 	oasVersion := d.Get("oas_version").(string)
 
-	// Create a new HTTP request
 	err := client.DeleteOASDocument(oasTitle, oasVersion)
 	if err != nil {
 		return diag.FromErr(err)

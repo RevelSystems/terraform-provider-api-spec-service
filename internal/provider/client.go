@@ -2,6 +2,7 @@ package provider
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -11,6 +12,14 @@ import (
 
 type Environment struct {
 	Host string
+}
+
+type UploadOASDocumentResponse struct {
+	Title              string        `json:"title"`
+	Version            string        `json:"version"`
+	HandlerOutput      interface{}   `json:"handler_output"`
+	BreakingChanges    []interface{} `json:"breaking_changes"`
+	NonBreakingChanges []interface{} `json:"non_breaking_changes"`
 }
 
 type Client struct {
@@ -52,7 +61,7 @@ func (c *Client) GetOASDocument(title, version string) (interface{}, error) {
 	return respBody, nil
 }
 
-func (c *Client) UploadOASDocument(oasFile *os.File, contentType string) ([]byte, error) {
+func (c *Client) UploadOASDocument(oasFile *os.File, contentType string) (*UploadOASDocumentResponse, error) {
 	// Get stats about the OAS file
 	oasFileInfo, err := oasFile.Stat()
 	if err != nil {
@@ -110,7 +119,12 @@ func (c *Client) UploadOASDocument(oasFile *os.File, contentType string) ([]byte
 		return nil, fmt.Errorf(string(respBody))
 	}
 
-	return respBody, nil
+	var oasResp UploadOASDocumentResponse
+	if err := json.Unmarshal(respBody, &oasResp); err != nil {
+		return nil, err
+	}
+
+	return &oasResp, nil
 }
 
 func (c *Client) DeleteOASDocument(title, version string) error {
