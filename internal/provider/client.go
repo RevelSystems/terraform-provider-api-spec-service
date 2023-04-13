@@ -11,7 +11,8 @@ import (
 )
 
 type Environment struct {
-	Host string
+	Host        string
+	M2MTokenURL string
 }
 
 type UploadOASDocumentResponse struct {

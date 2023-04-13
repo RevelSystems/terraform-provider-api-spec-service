@@ -22,9 +22,24 @@ func New() func() *schema.Provider {
 			Schema: map[string]*schema.Schema{
 				"m2m_token": {
 					Type:        schema.TypeString,
-					Required:    true,
+					Optional:    true,
+					Computed:    true,
 					DefaultFunc: schema.EnvDefaultFunc("M2M_TOKEN", nil),
 					Description: "The M2M token that will be used to call API spec service",
+				},
+				"client_id": {
+					Type:         schema.TypeString,
+					Optional:     true,
+					RequiredWith: []string{"client_secret"},
+					DefaultFunc:  schema.EnvDefaultFunc("CLIENT_ID", nil),
+					Description:  "The client id that will be used to issue M2M token",
+				},
+				"client_secret": {
+					Type:         schema.TypeString,
+					Optional:     true,
+					RequiredWith: []string{"client_id"},
+					DefaultFunc:  schema.EnvDefaultFunc("CLIENT_SECRET", nil),
+					Description:  "The client secret that will be used to issue M2M token",
 				},
 				"environment": {
 					Type:         schema.TypeString,
@@ -45,8 +60,10 @@ func New() func() *schema.Provider {
 func configure(p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 		config := Config{
-			M2MToken:    d.Get("m2m_token").(string),
-			Environment: d.Get("environment").(string),
+			M2MToken:     d.Get("m2m_token").(string),
+			Environment:  d.Get("environment").(string),
+			ClientID:     d.Get("client_id").(string),
+			ClientSecret: d.Get("client_secret").(string),
 		}
 
 		client, err := config.Client()
