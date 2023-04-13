@@ -1,0 +1,16 @@
+.DS_Store
+# Visual studio code settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# Local .terraform directories
+.terraform
+
+# .tfstate files
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+
+terraform-provider-api-spec-service
