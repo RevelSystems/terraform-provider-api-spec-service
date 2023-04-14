@@ -7,7 +7,10 @@ terraform {
 }
 
 provider "api-spec-service" {
-  m2m_token = "<M2M-token>"
+  m2m_token = "<M2M_TOKEN>"
+  // Instead of m2m_token, you can provide client_id and client_secret to allow the provider to get the token
+  client_id     = "<CLIENT_ID>"
+  client_secret = "<CLIENT_SECRET>"
 }
 
 resource "oas_document" "testoas" {
