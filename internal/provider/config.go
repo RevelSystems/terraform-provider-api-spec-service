@@ -92,7 +92,7 @@ func (c *Config) getM2MToken(client *http.Client) (*string, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode > 299 {
+	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("%s", resp.Body)
 	}
 
