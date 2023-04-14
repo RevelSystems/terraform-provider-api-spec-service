@@ -16,3 +16,9 @@ install: build
 
 release:
 	goreleaser release --rm-dist --snapshot --skip-publish  --skip-sign
+
+clean:
+	rm -rf ./examples/local/.terraform
+	rm ./examples/local/.terraform.lock.hcl
+	rm ./examples/local/terraform.tfstate
+	rm ./examples/local/terraform.tfstate.backup
