@@ -92,12 +92,23 @@ func (c *Config) getM2MToken(client *http.Client) (*string, error) {
 	}
 	defer resp.Body.Close()
 
+	respJsonDecoder := json.NewDecoder(resp.Body)
+
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("%s", resp.Body)
+		var rawResp map[string]interface{}
+		if err := respJsonDecoder.Decode(&rawResp); err != nil {
+			return nil, err
+		}
+
+		rawRespBytes, err := json.Marshal(rawResp)
+		if err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf(string(rawRespBytes))
 	}
 
 	var m2mTokenResp M2MTokenResponse
-	if err := json.NewDecoder(resp.Body).Decode(&m2mTokenResp); err != nil {
+	if err := respJsonDecoder.Decode(&m2mTokenResp); err != nil {
 		return nil, err
 	}
 
