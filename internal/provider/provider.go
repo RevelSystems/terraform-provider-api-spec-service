@@ -24,28 +24,39 @@ func New() func() *schema.Provider {
 					Type:        schema.TypeString,
 					Optional:    true,
 					Computed:    true,
+					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("M2M_TOKEN", nil),
-					Description: "The M2M token that will be used to call API spec service",
+					Description: `The M2M token that will be used to call API spec service. 
+						Required only if ` + "`client_id`" + ` or ` + "`client_secret`" + ` is absent.
+						This value can also be sourced from the ` + "`M2M_TOKEN`" + ` environment variable.
+					`,
 				},
 				"client_id": {
 					Type:         schema.TypeString,
 					Optional:     true,
 					RequiredWith: []string{"client_secret"},
 					DefaultFunc:  schema.EnvDefaultFunc("CLIENT_ID", nil),
-					Description:  "The client id that will be used to issue M2M token",
+					Description: `The client id that will be used to issue M2M token. 
+						Required only if ` + "`m2m_token`" + ` is absent. 
+						This value can also be sourced from the ` + "`CLIENT_ID`" + ` environment variable.
+					`,
 				},
 				"client_secret": {
 					Type:         schema.TypeString,
 					Optional:     true,
+					Sensitive:    true,
 					RequiredWith: []string{"client_id"},
 					DefaultFunc:  schema.EnvDefaultFunc("CLIENT_SECRET", nil),
-					Description:  "The client secret that will be used to issue M2M token",
+					Description: `The client secret that will be used to issue M2M token. 
+						Required only if ` + "`m2m_token`" + ` is absent.
+						This value can also be sourced from the ` + "`CLIENT_SECRET`" + ` environment variable.
+					`,
 				},
 				"environment": {
 					Type:         schema.TypeString,
 					Optional:     true,
 					Default:      "dev",
-					Description:  "API spec service envrionemnt",
+					Description:  `API spec service envrionemnt. Options: ` + "`dev (Default)`" + `,` + "` qa`" + `,` + "` prod`.",
 					ValidateFunc: validation.StringInSlice([]string{"dev", "qa", "prod"}, false),
 				},
 			},

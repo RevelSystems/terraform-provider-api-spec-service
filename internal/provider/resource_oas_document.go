@@ -19,6 +19,7 @@ var fileExtensionToContentType = map[string]string{
 
 var _ = registerResource("oas_document", func() *schema.Resource {
 	return &schema.Resource{
+		Description:   `The ` + "`oas_document`" + ` resource allows to manage the lifecycle of OpenAPI specification in API Spec Service.`,
 		CreateContext: resourceOASDocumentCreate,
 		ReadContext:   resourceOASDocumentRead,
 		DeleteContext: resourceOASDocumentDelete,
@@ -27,23 +28,25 @@ var _ = registerResource("oas_document", func() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"oas_file_path": {
-				Description: "Path to OpenAPI specification file",
+				Description: "Path to OpenAPI specification file. It can be in JSON or YAML (YML) format.",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
 			},
 			// Optional inputs
 			"oas_title": {
-				Description: "The title inside the OpenAPI specification",
+				Description: "The title inside the OpenAPI specification.",
 				Type:        schema.TypeString,
-				Optional:    true,
+				Optional:    false,
+				Required:    false,
 				ForceNew:    true,
 				Computed:    true,
 			},
 			"oas_version": {
-				Description: "The version inside the OpenAPI specification",
+				Description: "The version inside the OpenAPI specification.",
 				Type:        schema.TypeString,
-				Optional:    true,
+				Optional:    false,
+				Required:    false,
 				ForceNew:    true,
 				Computed:    true,
 			},
